@@ -16,12 +16,40 @@ export async function verifyTypeAndEmployee(type: any, employeeId: number) {
     return;
 }
 
-export async function createNewCard(type: any, employee: any) {
+export async function verifyId(id: any) {
+    const card = await cardRepository.findById(id);
+
+    if (!card) {
+        throw { type: 'not_found', message: 'card not found' };
+    }
+
+    return card;
+}
+
+export async function verifyExpiration(expirationDate: string) {
+    const expirated = dayjs().format('MM/YY') > expirationDate;
+
+    if (expirated) {
+        throw { type: 'conflict', message: 'card expirated' };
+    }
+
+    return;
+}
+
+export async function verifyCVC(CVC: string, securityCode: string) {
+    if (!bcrypt.compareSync(CVC, securityCode)) {
+        throw { type: 'conflict', message: 'CVC does not match' };
+    }
+
+    return;
+}
+
+export async function create(type: any, employee: any) {
     const number = faker.finance.creditCardNumber('mastercard');
     const CVV = faker.finance.creditCardCVV();
     const securityCode = bcrypt.hashSync(CVV, 10);
     const expirationDate = dayjs().add(5, 'year').format('MM/YY');
-    const cardholderName = cardName(employee.fullName);
+    const cardholderName = name(employee.fullName);
     const cardData = {
         employeeId: employee.id,
         number,
@@ -36,21 +64,30 @@ export async function createNewCard(type: any, employee: any) {
     };
 
     await cardRepository.insert(cardData);
-    const cards = await cardRepository.find();
-    console.log(cards, CVV);
+
     return;
 }
 
-function cardName(employeeName: string) {
-    const cardName: string[] = employeeName.toUpperCase().split(' ');
+export async function activate(card: any, password: string) {
+    const passwordHash = bcrypt.hashSync(password, 10);
+    const cardData = { ...card, password: passwordHash };
+    delete cardData.id;
 
-    for (let i = 1; i < cardName.length - 1; i++) {
-        if (cardName[i].length > 2) {
-            cardName[i] = cardName[i][0];
+    await cardRepository.update(card.id, cardData);
+
+    return;
+}
+
+function name(employeeName: string) {
+    const name: string[] = employeeName.toUpperCase().split(' ');
+
+    for (let i = 1; i < name.length - 1; i++) {
+        if (name[i].length > 2) {
+            name[i] = name[i][0];
         } else {
-            cardName[i] = '';
+            name[i] = '';
         }
     }
 
-    return cardName.join(' ');
+    return name.join(' ');
 }

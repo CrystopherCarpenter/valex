@@ -5,19 +5,27 @@ import * as cardService from '../services/cardService.js';
 export async function newCard(req: Request, res: Response) {
     const { employeeId, type } = req.body;
     const company = res.locals.company;
-    const employee = await employeeService.verifyEmployee(
-        employeeId,
-        company.id
-    );
+    const employee = await employeeService.verifyId(employeeId);
+    await employeeService.verifyCompany(employee, company.id);
     await cardService.verifyTypeAndEmployee(type, employeeId);
-
-    await cardService.createNewCard(type, employee);
+    await cardService.create(type, employee);
 
     return res.sendStatus(201);
 }
 
-export async function activateCard(req: Request, res: Response) {
+export async function activate(req: Request, res: Response) {
     const { id: cardId } = req.params;
     const { CVC, password } = req.body;
-    return res.send({ cardId, CVC, password });
+    const card = await cardService.verifyId(cardId);
+
+    await cardService.verifyExpiration(card.expirationDate);
+
+    if (card.password !== null) {
+        throw { type: 'conflict', message: 'card already active' };
+    }
+
+    await cardService.verifyCVC(CVC, card.securityCode);
+    await cardService.activate(card, password);
+
+    return res.sendStatus(200);
 }

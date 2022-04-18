@@ -18,7 +18,7 @@ cardsRouter.post(
 cardsRouter.post(
     '/cards/:id/activate',
     validateSchemaMiddleware(activationSchema),
-    cardController.activateCard
+    cardController.activate
 );
 
 cardsRouter.get('/cards/:id/balance', balanceController.getBalance);
