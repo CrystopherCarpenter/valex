@@ -10,6 +10,10 @@ function errorHandlerMiddleware(
         return res.sendStatus(404);
     }
 
+    if (error.type === 'conflict') {
+        return res.sendStatus(409);
+    }
+
     return res.sendStatus(500);
 }
 
