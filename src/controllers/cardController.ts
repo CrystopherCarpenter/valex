@@ -17,14 +17,9 @@ export async function activate(req: Request, res: Response) {
     const { id: cardId } = req.params;
     const { CVC, password } = req.body;
     const card = await cardService.verifyId(cardId);
-
     await cardService.verifyExpiration(card.expirationDate);
-
-    if (card.password !== null) {
-        throw { type: 'conflict', message: 'card already active' };
-    }
-
-    await cardService.verifyCVC(CVC, card.securityCode);
+    await cardService.alreadyActive(card.password);
+    await cardService.verifySecurity(CVC, card.securityCode);
     await cardService.activate(card, password);
 
     return res.sendStatus(200);

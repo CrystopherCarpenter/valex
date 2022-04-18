@@ -36,9 +36,17 @@ export async function verifyExpiration(expirationDate: string) {
     return;
 }
 
-export async function verifyCVC(CVC: string, securityCode: string) {
-    if (!bcrypt.compareSync(CVC, securityCode)) {
-        throw { type: 'conflict', message: 'CVC does not match' };
+export async function verifySecurity(authData: string, persistedData: string) {
+    if (!bcrypt.compareSync(authData, persistedData)) {
+        throw { type: 'conflict', message: 'invalid authentication' };
+    }
+
+    return;
+}
+
+export async function alreadyActive(password: string) {
+    if (password !== null) {
+        throw { type: 'conflict', message: 'card already active' };
     }
 
     return;
