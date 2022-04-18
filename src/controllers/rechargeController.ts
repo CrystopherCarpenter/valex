@@ -1,10 +1,15 @@
 import { Request, Response } from 'express';
+import * as cardService from '../services/cardService.js';
+import * as rechargeService from '../services/rechargeServices.js';
 
 export async function recharge(req: Request, res: Response) {
-    const apiKey = req.headers['x-api-key'];
     const { id: cardId } = req.params;
     const { amount } = req.body;
-    const company = res.locals.company;
+    const card = await cardService.verifyId(cardId);
 
-    return res.send({ company, cardId, apiKey, amount });
+    await cardService.verifyExpiration(card.expirationDate);
+
+    await rechargeService.createNew({ cardId, amount });
+
+    return res.sendStatus(200);
 }
