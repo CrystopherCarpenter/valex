@@ -6,6 +6,10 @@ function errorHandlerMiddleware(
     res: Response,
     next: NextFunction
 ) {
+    if (error.type === 'bad_request') {
+        return res.sendStatus(400);
+    }
+
     if (error.type === 'not_found') {
         return res.sendStatus(404);
     }

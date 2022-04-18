@@ -13,7 +13,7 @@ export async function verifyId(id: any) {
 export async function verifyType(businessType: string, cardType: string) {
     if (businessType !== cardType) {
         throw {
-            type: 'conflict',
+            type: 'bad_request',
             message: 'business and card types do not match',
         };
     }

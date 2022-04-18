@@ -38,7 +38,7 @@ export async function verifyExpiration(expirationDate: string) {
 
 export async function verifySecurity(authData: string, persistedData: string) {
     if (!bcrypt.compareSync(authData, persistedData)) {
-        throw { type: 'conflict', message: 'invalid authentication' };
+        throw { type: 'bad_request', message: 'invalid authentication' };
     }
 
     return;
@@ -46,7 +46,7 @@ export async function verifySecurity(authData: string, persistedData: string) {
 
 export async function alreadyActive(password: string) {
     if (password !== null) {
-        throw { type: 'conflict', message: 'card already active' };
+        throw { type: 'bad_request', message: 'card already active' };
     }
 
     return;
