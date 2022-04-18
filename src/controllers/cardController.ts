@@ -31,6 +31,7 @@ export async function blockUnblockCard(req: Request, res: Response) {
     const path = req.path.split('/').reverse()[0];
     const card = await cardService.verifyId(cardId);
     await cardService.verifyExpiration(card.expirationDate);
+    await cardService.verifyActivation(card.password);
     await cardService.verifyBlock(card.isBlocked, path);
     await cardService.verifySecurity(password, card.password);
     await cardService.blockUnblock(card, path);

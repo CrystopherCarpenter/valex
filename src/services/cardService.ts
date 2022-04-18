@@ -52,6 +52,14 @@ export async function alreadyActive(password: string) {
     return;
 }
 
+export async function verifyActivation(password: string) {
+    if (!password) {
+        throw { type: 'bad_request', message: 'card not activated' };
+    }
+
+    return;
+}
+
 export async function verifyBlock(blocked: boolean, path: string) {
     if (path === 'block' && blocked) {
         throw { type: 'bad_request', message: 'card already blocked' };
