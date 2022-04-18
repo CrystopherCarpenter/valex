@@ -24,3 +24,16 @@ export async function activate(req: Request, res: Response) {
 
     return res.sendStatus(200);
 }
+
+export async function blockUnblockCard(req: Request, res: Response) {
+    const { id: cardId } = req.params;
+    const { password } = req.body;
+    const path = req.path.split('/').reverse()[0];
+    const card = await cardService.verifyId(cardId);
+    await cardService.verifyExpiration(card.expirationDate);
+    await cardService.verifyBlock(card.isBlocked, path);
+    await cardService.verifySecurity(password, card.password);
+    await cardService.blockUnblock(card, path);
+
+    return res.sendStatus(200);
+}

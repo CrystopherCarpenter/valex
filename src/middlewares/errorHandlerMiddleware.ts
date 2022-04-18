@@ -6,6 +6,8 @@ function errorHandlerMiddleware(
     res: Response,
     next: NextFunction
 ) {
+    console.log(error.message);
+
     if (error.type === 'bad_request') {
         return res.sendStatus(400);
     }

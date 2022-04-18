@@ -5,6 +5,7 @@ import validateApiKey from '../middlewares/validateApiKey.js';
 import { validateSchemaMiddleware } from '../middlewares/validateSchemaMiddleware.js';
 import { activationSchema } from '../schemas/activationSchema.js';
 import { newCardSchema } from '../schemas/newCardSchema.js';
+import { blockUnblockSchema } from '../schemas/blockUnblockSchema.js';
 
 const cardsRouter = Router();
 
@@ -22,5 +23,17 @@ cardsRouter.post(
 );
 
 cardsRouter.get('/cards/:id/balance', balanceController.getBalance);
+
+cardsRouter.post(
+    '/cards/:id/block',
+    validateSchemaMiddleware(blockUnblockSchema),
+    cardController.blockUnblockCard
+);
+
+cardsRouter.post(
+    '/cards/:id/unblock',
+    validateSchemaMiddleware(blockUnblockSchema),
+    cardController.blockUnblockCard
+);
 
 export default cardsRouter;

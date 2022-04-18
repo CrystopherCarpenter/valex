@@ -52,6 +52,26 @@ export async function alreadyActive(password: string) {
     return;
 }
 
+export async function verifyBlock(blocked: boolean, path: string) {
+    if (path === 'block' && blocked) {
+        throw { type: 'bad_request', message: 'card already blocked' };
+    }
+
+    if (path === 'unblock' && !blocked) {
+        throw { type: 'bad_request', message: 'card already unblocked' };
+    }
+
+    return;
+}
+
+export async function isBlocked(isBlocked: boolean) {
+    if (isBlocked) {
+        throw { type: 'bad_request', message: 'card is blocked' };
+    }
+
+    return;
+}
+
 export async function create(type: any, employee: any) {
     const number = faker.finance.creditCardNumber('mastercard');
     const CVV = faker.finance.creditCardCVV();
@@ -79,6 +99,16 @@ export async function create(type: any, employee: any) {
 export async function activate(card: any, password: string) {
     const passwordHash = bcrypt.hashSync(password, 10);
     const cardData = { ...card, password: passwordHash };
+    delete cardData.id;
+
+    await cardRepository.update(card.id, cardData);
+
+    return;
+}
+
+export async function blockUnblock(card: any, path: string) {
+    const isBlocked = path === 'block' ? true : false;
+    const cardData = { ...card, isBlocked };
     delete cardData.id;
 
     await cardRepository.update(card.id, cardData);

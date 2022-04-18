@@ -8,6 +8,7 @@ export async function newPayment(req: Request, res: Response) {
     const { password, businessId, amount } = req.body;
     const card = await cardService.verifyId(cardId);
     const business = await businessService.verifyId(businessId);
+    await cardService.isBlocked(card.isBlocked);
     await cardService.verifyExpiration(card.expirationDate);
     await cardService.verifySecurity(password, card.password);
     await businessService.verifyType(business.type, card.type);
